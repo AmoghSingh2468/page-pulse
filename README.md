@@ -12,6 +12,8 @@ Built as a MERN application:
 
 ---
 
+Deployed project link: https://page-pulse-production-9764.up.railway.app/
+
 ## Why it's built this way (the short version)
 
 The core problem is that auditing arbitrary user-supplied URLs means making outbound
