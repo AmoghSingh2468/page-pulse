@@ -1,0 +1,47 @@
+digraph PagePulse {
+  rankdir=TB;
+  bgcolor="white";
+  splines=spline;
+  nodesep=0.5;
+  ranksep=0.65;
+  fontname="Helvetica";
+  node [fontname="Helvetica", shape=box, style="rounded,filled", penwidth=1.6, margin="0.22,0.14", fontsize=12];
+  edge [fontname="Helvetica", fontsize=10, color="#6b7a8d", penwidth=1.3, arrowsize=0.8];
+
+  // ---- Compute (stateless) : mint ----
+  clients   [label="Clients", fillcolor="#e8eefc", color="#6aa9ff", fontcolor="#123a6b"];
+  lb        [label="Load balancer / API gateway\nTLS · coarse throttle · health routing", fillcolor="#eef2f7", color="#8496ab", fontcolor="#2a3543"];
+  api       [label="API instances  (STATELESS)\nvalidate · SSRF check · rate-limit\ncache lookup · enqueue · serve", fillcolor="#e7f9f1", color="#2bb583", fontcolor="#06231a"];
+  workers   [label="Auditor worker pool  (STATELESS)\nbounded concurrency · timeouts\nredirect + SSRF checks · circuit breaker", fillcolor="#e7f9f1", color="#2bb583", fontcolor="#06231a"];
+
+  // ---- State (amber) ----
+  redis     [label="Redis   ◆ STATE\nhot cache · rate-limit counters · job queue", fillcolor="#fdf3d8", color="#d89e1a", fontcolor="#5a4300"];
+  mongo     [label="MongoDB   ◆ STATE\ndurable audit results · TTL index", fillcolor="#fdf3d8", color="#d89e1a", fontcolor="#5a4300"];
+
+  // ---- External ----
+  targets   [label="Target sites\n(untrusted, uncontrolled latency)", shape=box, style="filled", fillcolor="#f4f5f7", color="#aab6c4", fontcolor="#55616f"];
+
+  // Flow
+  clients -> lb;
+  lb -> api;
+  api -> redis   [label="  hot read/write\n  + enqueue on miss"];
+  api -> mongo   [label="  durable read"];
+  redis -> workers [label="  dequeue job"];
+  workers -> targets [label="  outbound GET"];
+  workers -> mongo   [label="  write result", constraint=false];
+  workers -> redis   [label="  warm cache", constraint=false];
+
+  { rank=same; redis; mongo; }
+
+  // Legend
+  subgraph cluster_legend {
+    label="";
+    style="rounded";
+    color="#d7dde5";
+    fontname="Helvetica";
+    l1 [label="Stateless compute\n(scale horizontally)", fillcolor="#e7f9f1", color="#2bb583", fontcolor="#06231a", fontsize=10];
+    l2 [label="◆ Stateful store\n(all shared state lives here)", fillcolor="#fdf3d8", color="#d89e1a", fontcolor="#5a4300", fontsize=10];
+    l3 [label="External / untrusted", fillcolor="#f4f5f7", color="#aab6c4", fontcolor="#55616f", fontsize=10];
+    l1 -> l2 -> l3 [style=invis];
+  }
+}

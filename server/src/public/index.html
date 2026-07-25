@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Page Pulse API</title>
+    <style>
+      :root { color-scheme: dark; }
+      body {
+        margin: 0; min-height: 100vh; background: #0d1420; color: #e6edf3;
+        font: 15px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
+        display: flex; flex-direction: column;
+      }
+      main { flex: 1; max-width: 720px; margin: 0 auto; padding: 64px 24px; }
+      h1 { font-size: 28px; margin: 0 0 4px; letter-spacing: -0.5px; }
+      .tag { color: #57d9a3; }
+      code { background: #161f2e; padding: 2px 6px; border-radius: 4px; color: #9ecbff; }
+      pre { background: #161f2e; padding: 16px; border-radius: 8px; overflow: auto; }
+      footer { border-top: 1px solid #1e2a3d; padding: 20px 24px; text-align: center; font-size: 13px; color: #7d8ca3; }
+      footer a { color: #57d9a3; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Page Pulse <span class="tag">/ API</span></h1>
+      <p>Production-grade URL audit service. Send a URL, get a health report.</p>
+      <pre><code>GET  /v1/audit?url=https://example.com
+POST /v1/audit   { "url": "https://example.com" }
+GET  /healthz    (liveness)
+GET  /readyz     (readiness)</code></pre>
+      <p>See the README for the full API contract.</p>
+    </main>
+    <footer>
+      Built for
+      <a href="https://digitalheroesco.com" target="_blank" rel="noopener">Digital Heroes Training Task</a>
+    </footer>
+  </body>
+</html>
